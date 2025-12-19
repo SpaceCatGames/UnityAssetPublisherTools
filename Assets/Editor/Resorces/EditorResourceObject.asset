@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e57ddff36ce294a45ac83ea97352c290, type: 3}
+  m_Name: EditorResourceObject
+  m_EditorClassIdentifier: 
+  <PackageVersion>k__BackingField: 1.0.0
+  <BaseFolder>k__BackingField: {fileID: 102900000, guid: 34c956ad00ab66249a9bffa1b6482162, type: 3}
+  <PackageAsset>k__BackingField: {fileID: 4900000, guid: b00ea02f556ed0843bfcd0ba279c2dd6, type: 3}
+  <AssetFolderName>k__BackingField: SCG
+  <PackageName>k__BackingField: scg.unity.publishertools
