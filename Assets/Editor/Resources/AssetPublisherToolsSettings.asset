@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e57ddff36ce294a45ac83ea97352c290, type: 3}
+  m_Name: AssetPublisherToolsSettings
+  m_EditorClassIdentifier: 
+  <PackageVersion>k__BackingField: 1.0.1
+  _lastSyncedPackageVersion: 1.0.1
+  <PackageId>k__BackingField: scg.unity.publishertools
+  _lastSyncedPackageId: scg.unity.publishertools
+  <PackageDisplayName>k__BackingField: UnityAssetPublisherTools
+  _lastSyncedPackageDisplayName: UnityAssetPublisherTools
+  <PackageDescription>k__BackingField: 'Editor tools for publishing Unity assets:
+    manage Samples~/Documentation~ visibility, automate package versioning, and build
+    or return local UPM packages.'
+  _lastSyncedPackageDescription: 'Editor tools for publishing Unity assets: manage
+    Samples~/Documentation~ visibility, automate package versioning, and build or
+    return local UPM packages.'
+  <AssetRootFolder>k__BackingField: SCG
+  <BaseFolder>k__BackingField: {fileID: 102900000, guid: ca7412fe184f7334d94cd38b8e4bb599, type: 3}
+  <PackageAsset>k__BackingField: {fileID: 4900000, guid: b00ea02f556ed0843bfcd0ba279c2dd6, type: 3}
+  _lastSyncedPackageJsonPath: Assets/SCG/package.json

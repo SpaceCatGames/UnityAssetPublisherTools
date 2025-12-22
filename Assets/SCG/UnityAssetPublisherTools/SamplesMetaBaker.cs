@@ -14,7 +14,7 @@ namespace SCG.UnityAssetPublisherTools
     public static class SamplesMetaBaker
     {
         #region Constants
-        private const string SamplesFolder = "Samples~";
+        private const string SamplesFolder = Constants.SamplesBase;
         private const string ImportRootFolder = "Assets/__SamplesMetaBake__";
         #endregion
 
