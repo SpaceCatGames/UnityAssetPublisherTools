@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using UnityEditor;
 #if UNITY_2021_2_OR_NEWER

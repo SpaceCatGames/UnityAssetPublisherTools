@@ -1,4 +1,4 @@
-﻿using SCG.UnityAssetPublisherTools.Upm;
+using SCG.UnityAssetPublisherTools.Upm;
 using UnityEditor;
 
 namespace SCG.UnityAssetPublisherTools

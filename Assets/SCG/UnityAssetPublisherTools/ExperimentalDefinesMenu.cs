@@ -1,4 +1,4 @@
-﻿using SCG.UnityAssetPublisherTools.Helpers;
+using SCG.UnityAssetPublisherTools.Helpers;
 using UnityEditor;
 
 namespace SCG.UnityAssetPublisherTools

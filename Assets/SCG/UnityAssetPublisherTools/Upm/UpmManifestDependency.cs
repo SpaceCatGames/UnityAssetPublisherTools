@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using SCG.UnityAssetPublisherTools.Helpers;
 
 namespace SCG.UnityAssetPublisherTools.Upm
