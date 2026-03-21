@@ -9,6 +9,22 @@ namespace SCG.UnityAssetPublisherTools.Helpers
 {
     public class DefineSymbolsManager
     {
+        #region Internals
+
+        /// <summary>
+        /// Returns the build target group for the currently active build target.
+        /// Uses <c>BuildPipeline.GetBuildTargetGroup</c> on Unity 6000.3+ where
+        /// <c>EditorUserBuildSettings.selectedBuildTargetGroup</c> is obsolete.
+        /// </summary>
+        private static BuildTargetGroup GetActiveBuildTargetGroup() =>
+#if UNITY_6000_3_OR_NEWER
+            BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
+#else
+            EditorUserBuildSettings.selectedBuildTargetGroup;
+#endif
+
+        #endregion
+
         /// <summary>
         /// Checks whether a scripting define symbol is present for the
         /// currently selected build target.
@@ -27,8 +43,7 @@ namespace SCG.UnityAssetPublisherTools.Helpers
                 return false;
 
 #if UNITY_2021_2_OR_NEWER
-            // Modern API: NamedBuildTarget
-            var named = NamedBuildTarget.FromBuildTargetGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            var named = NamedBuildTarget.FromBuildTargetGroup(GetActiveBuildTargetGroup());
             PlayerSettings.GetScriptingDefineSymbols(named, out var defines);
             return defines.Any(d => string.Equals(d, define, StringComparison.Ordinal));
 #else
@@ -54,9 +69,7 @@ namespace SCG.UnityAssetPublisherTools.Helpers
                 return false;
 
 #if UNITY_2021_2_OR_NEWER
-            // Modern API
-            var selectedGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var selected = NamedBuildTarget.FromBuildTargetGroup(selectedGroup);
+            var selected = NamedBuildTarget.FromBuildTargetGroup(GetActiveBuildTargetGroup());
 
             var changedOnSelected = AddTo(selected, newDefine);
 
@@ -78,7 +91,6 @@ namespace SCG.UnityAssetPublisherTools.Helpers
                 return true;
             }
 #else
-            // Legacy API
             var selected = EditorUserBuildSettings.selectedBuildTargetGroup;
             var changedOnSelected = AddTo(selected, newDefine);
 
@@ -122,9 +134,7 @@ namespace SCG.UnityAssetPublisherTools.Helpers
                 return false;
 
 #if UNITY_2021_2_OR_NEWER
-            // Modern API
-            var selectedGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var selected = NamedBuildTarget.FromBuildTargetGroup(selectedGroup);
+            var selected = NamedBuildTarget.FromBuildTargetGroup(GetActiveBuildTargetGroup());
 
             var changedOnSelected = RemoveFrom(selected, defineToRemove);
 
@@ -146,7 +156,6 @@ namespace SCG.UnityAssetPublisherTools.Helpers
                 return true;
             }
 #else
-            // Legacy API
             var selected = EditorUserBuildSettings.selectedBuildTargetGroup;
             var changedOnSelected = RemoveFrom(selected, defineToRemove);
 
