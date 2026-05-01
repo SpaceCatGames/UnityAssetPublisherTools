@@ -10,6 +10,9 @@ namespace SCG.UnityAssetPublisherTools
         /// <summary>Root menu path prefix for all SCG editor entries.</summary>
         public const string MenuRoot = nameof(SCG) + "/";
 
+        /// <summary>Menu item used to toggle root mirror synchronization.</summary>
+        public const string RootFolderSyncMenuPath = MenuRoot + "Enable Samples and Documentation root sync";
+
         /// <summary>Unity project folder name used for regular assets.</summary>
         public const string AssetsRoot = "Assets/";
 
@@ -33,6 +36,12 @@ namespace SCG.UnityAssetPublisherTools
 
         /// <summary>Compilation define that marks Samples as already renamed.</summary>
         public const string SamplesRenamedDefineSymbol = "SAMPLES_RENAMED";
+
+        /// <summary>Root mirror folder name used for editable Samples copies under Assets.</summary>
+        public const string RootSamplesSyncFolder = "~Samples~";
+
+        /// <summary>Root mirror folder name used for editable Documentation copies under Assets.</summary>
+        public const string RootDocumentationSyncFolder = "~Documentation~";
     }
 
 }

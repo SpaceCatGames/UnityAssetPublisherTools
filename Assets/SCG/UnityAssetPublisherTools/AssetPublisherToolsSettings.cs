@@ -69,6 +69,11 @@ namespace SCG.UnityAssetPublisherTools
         [field: Tooltip("TextAsset reference to the effective package.json file.")]
         public TextAsset PackageAsset { get; set; }
 
+        /// <summary>Enables root mirror synchronization for hidden Samples~/Documentation~ folders.</summary>
+        [field: SerializeField]
+        [field: Tooltip("Enables root mirror synchronization for hidden Samples~/Documentation~ folders.")]
+        public bool IsRootFolderSyncEnabled { get; set; }
+
         [SerializeField]
         [HideInInspector]
         private string _lastSyncedPackageJsonPath;
@@ -105,6 +110,21 @@ namespace SCG.UnityAssetPublisherTools
         }
 
         /// <summary>
+        /// Tries to load a persistent settings asset without creating a temporary fallback instance.
+        /// This is used by menu and synchronization code that must not silently mutate a transient object.
+        /// Returns false when no stored settings asset exists in the project.
+        /// </summary>
+        /// <param name="settings">Loaded persistent settings asset when available.</param>
+        internal static bool TryGetPersistentInstance(out AssetPublisherToolsSettings settings)
+        {
+            settings = Resources.Load<AssetPublisherToolsSettings>(nameof(AssetPublisherToolsSettings));
+            if (settings == null)
+                settings = TryFindAnyProjectAsset();
+
+            return settings != null && EditorUtility.IsPersistent(settings);
+        }
+
+        /// <summary>
         /// Tries to locate any settings asset in the project via AssetDatabase.
         /// This is used as a fallback when the asset is not placed under Resources.
         /// Returns null when no settings asset exists in the project.
@@ -118,6 +138,27 @@ namespace SCG.UnityAssetPublisherTools
 
             var path = AssetDatabase.GUIDToAssetPath(guid);
             return string.IsNullOrWhiteSpace(path) ? null : AssetDatabase.LoadAssetAtPath<AssetPublisherToolsSettings>(path);
+        }
+
+        /// <summary>
+        /// Updates the root mirror synchronization toggle and persists the settings asset when needed.
+        /// The method returns false when the stored value already matches the requested one.
+        /// Callers can use the result to skip redundant follow-up work.
+        /// </summary>
+        /// <param name="value">Requested synchronization state.</param>
+        internal bool SetRootFolderSyncEnabled(bool value)
+        {
+            if (IsRootFolderSyncEnabled == value)
+                return false;
+
+            IsRootFolderSyncEnabled = value;
+
+            if (!EditorUtility.IsPersistent(this))
+                return true;
+
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+            return true;
         }
 
         #endregion

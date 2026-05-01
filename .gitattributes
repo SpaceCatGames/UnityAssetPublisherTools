@@ -15,22 +15,43 @@
 *.config text eol=lf
 *.settings text eol=lf
 *.types text eol=lf
-*.index text eol=lf
 *.properties text eol=lf
 *.plist text eol=lf
 *.gradle text eol=lf
 *.editorconfig text eol=lf
 *.dotsettings text eol=lf
+*.html text eol=lf
+*.htm text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.sass text eol=lf
+*.less text eol=lf
+*.svg text eol=lf
+*.sql text eol=lf
+*.graphql text eol=lf
+*.gql text eol=lf
 
 # Source code and scripts
-*.cs text eol=lf
+*.cs text eol=lf diff=csharp
+*.csx text eol=lf diff=csharp
 *.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
 *.java text eol=lf
 *.kt text eol=lf
 *.swift text eol=lf
 *.m text eol=lf
 *.mm text eol=lf
 *.h text eol=lf
+*.hpp text eol=lf
+*.c text eol=lf
+*.cc text eol=lf
+*.cpp text eol=lf
+*.go text eol=lf
+*.rs text eol=lf
 *.sh text eol=lf
 *.py text eol=lf
 *.bat text eol=crlf
@@ -50,10 +71,8 @@
 *.user text eol=crlf
 *.userprefs text eol=crlf
 
-# Windows metadata files should not participate in EOL normalization
+# Windows metadata and local editor state
 desktop.ini -text
-
-# User-local editor layouts are noisy and should not be normalized
 *.dwlt -text
 
 # Binary assets and archives
@@ -71,7 +90,6 @@ desktop.ini -text
 *.hdr -text
 *.ico -text
 *.icns -text
-*.cubemap -text
 *.ttf -text
 *.otf -text
 *.woff -text
@@ -87,6 +105,7 @@ desktop.ini -text
 *.webm -text
 *.fbx -text
 *.blend -text
+*.blend1 -text
 *.dll -text
 *.so -text
 *.dylib -text
@@ -100,6 +119,7 @@ desktop.ini -text
 *.7z -text
 *.rar -text
 *.gz -text
+*.tar -text
 *.jar -text
 *.aar -text
 *.apk -text
@@ -107,34 +127,63 @@ desktop.ini -text
 *.keystore -text
 *.jks -text
 *.unitypackage -text
+*.app -text
 
-# Unity text assets
-*.meta text eol=lf
-*.unity text eol=lf
-*.prefab text eol=lf
-*.asset text eol=lf
-*.anim text eol=lf
-*.controller text eol=lf
-*.mat text eol=lf
-*.overrideController text eol=lf
-*.playable text eol=lf
-*.mask text eol=lf
-*.physicMaterial text eol=lf
-*.physicsMaterial text eol=lf
-*.physicsMaterial2D text eol=lf
-*.inputactions text eol=lf
-*.guiskin text eol=lf
-*.flare text eol=lf
-*.fontsettings text eol=lf
-*.spriteatlas text eol=lf
-*.asmdef text eol=lf
-*.asmref text eol=lf
-*.uxml text eol=lf
-*.uss text eol=lf
-*.tss text eol=lf
-*.shader text eol=lf
-*.compute text eol=lf
+# Unity-specific attributes
+[attr]unity-json eol=lf linguist-language=json
+[attr]unity-yaml merge=unityyamlmerge eol=lf linguist-language=yaml
+
+# Unity JSON files
+*.asmdef unity-json
+*.asmref unity-json
+*.index unity-json
+*.inputactions unity-json
+*.shadergraph unity-json
+*.shadersubgraph unity-json
+
+# Unity UI Toolkit files
+*.uxml text eol=lf linguist-language=xml linguist-detectable
+*.uss text eol=lf diff=css linguist-language=css
+*.tss text eol=lf diff=css linguist-language=css
+
+# Unity shader and editor source files
 *.cginc text eol=lf
-*.hlsl text eol=lf
-*.shadergraph text eol=lf
+*.compute text eol=lf linguist-language=hlsl
+*.hlsl text eol=lf linguist-language=hlsl
+*.raytrace text eol=lf linguist-language=hlsl
 *.rsp text eol=lf
+*.shader text eol=lf
+
+# Unity YAML files
+*.anim unity-yaml
+*.asset unity-yaml
+*.brush unity-yaml
+*.controller unity-yaml
+*.flare unity-yaml
+*.fontsettings unity-yaml
+*.giparams unity-yaml
+*.guiskin unity-yaml
+*.lighting unity-yaml
+*.mask unity-yaml
+*.mat unity-yaml
+*.meta unity-yaml
+*.mixer unity-yaml
+*.overrideController unity-yaml
+*.physicsMaterial2D unity-yaml
+*.physicMaterial unity-yaml
+*.playable unity-yaml
+*.prefab unity-yaml
+*.preset unity-yaml
+*.renderTexture unity-yaml
+*.scenetemplate unity-yaml
+*.shadervariants unity-yaml
+*.signal unity-yaml
+*.spriteatlas unity-yaml
+*.spriteatlasv2 unity-yaml
+*.terrainlayer unity-yaml
+*.unity unity-yaml
+
+# Unity repository metadata
+Assets/Plugins/** linguist-generated
+Packages/packages-lock.json linguist-generated
+LightingData.asset binary

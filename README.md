@@ -16,6 +16,12 @@ The toolkit focuses on a practical workflow:
 - Uses a scripting define to keep state consistent (`SAMPLES_RENAMED`).
 - Accessible via menu items under `SCG/`.
 
+### Optional root mirrors for hidden folders
+- Adds a menu toggle under `SCG/Enable Samples and Documentation root sync`.
+- When enabled and `Samples~` / `Documentation~` are hidden, keeps full mirror copies under `Assets/~Samples~` and `Assets/~Documentation~`.
+- Mirrors are treated as the editable surface while the package folders stay hidden and are copied back with their `.meta` files intact.
+- If the original folders are revealed, the tool removes the mirrors only when GUIDs and contents still match; otherwise it stops and logs an explicit error instead of overwriting data.
+
 ### Preserve stable GUIDs for Samples~
 When sample assets are shipped via Package Manager import, missing `.meta` files can lead to GUID changes and broken references.
 
@@ -59,8 +65,19 @@ Return back to project (UPM mode):
 
 ## Installation (UPM)
 
-Add via Git URL in Package Manager (or `manifest.json`):
-https://github.com/SpaceCatGames/UnityAssetPublisherTools.git?path=Assets/SCG
+1. Open `Window > Package Manager`.
+2. Click `+`.
+
+### Git URL
+
+Add the package through Package Manager or `Packages/manifest.json`:
+
+`https://github.com/SpaceCatGames/UnityAssetPublisherTools.git?path=Assets/SCG`
+
+### Local package
+
+1. Choose `Add package from disk...`.
+2. Select `Assets/SCG/package.json` from this repository.
 
 ## Setup
 
@@ -89,13 +106,17 @@ All menu items live under `SCG/`:
 - Show Samples and Documentation folders / Hide Samples and Documentation folders
   Toggles `Samples~` and `Documentation~` visibility by renaming folders.
 
+- Enable Samples and Documentation root sync
+  Toggles the optional root-level mirrors `Assets/~Samples~` and `Assets/~Documentation~`.
+  The setting is stored in `AssetPublisherToolsSettings` and is disabled by default.
+
 - Build for UPM Package
   Builds an embedded package and switches the project into UPM mode.
 
 - Return from UPM Package (to project)
   Restores the original project layout from the embedded package.
 
-- Set UNITY_ASTOOLS_EXPERIMENTAL Define
+- Enable UNITY_ASTOOLS_EXPERIMENTAL Define
   Adds an optional experimental define for local workflows.
 
 ## Notes
@@ -104,24 +125,9 @@ All menu items live under `SCG/`:
 - Folder moves can fail if files are locked by external tools (File Explorer windows, IDEs/code editors, VCS clients, antivirus scanners, and any external processes touching the folder).
 - `SamplesMetaBaker` uses a temporary folder under `Assets/` and cleans it up after work.
 
-## Known warning during Return
-
-When returning from UPM layout back to the project layout, Unity can print a warning like:
-
-`Couldn't create '<Project>/Packages/<...>/~UnityDirMonSyncFile~...~'`
-
-This comes from Unity's Directory Monitoring feature and usually does not affect the move result.
-If you want to suppress it, you can disable Directory Monitoring in Unity Preferences (Edit -> Preferences -> Asset Pipeline -> Directory Monitoring) before running Return.
-
-Unity can also print warnings when `Documentation~` and `Samples~` are being renamed or moved.
-These warnings are expected and indicate Unity reimport/refresh work for those special folders.
-They do not affect the result, and there is no reliable way to fully suppress them other than avoiding the toggle/move itself.
-
 ## License
 
 MIT License
-
-Copyright © 2025 Space Cat Games
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

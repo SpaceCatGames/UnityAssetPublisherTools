@@ -3,6 +3,6 @@
   <Project Path="asset-store-tools-editor.csproj" />
   <Project Path="UnityEditor.UI.csproj" />
   <Project Path="Unity.2D.Tilemap.Editor.csproj" />
-  <Project Path="Unity.2D.Sprite.Editor.csproj" />
   <Project Path="SCG.UnityAssetPublisherTools.csproj" />
+  <Project Path="Unity.2D.Sprite.Editor.csproj" />
 </Solution>

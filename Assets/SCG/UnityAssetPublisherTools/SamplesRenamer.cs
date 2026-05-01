@@ -50,7 +50,10 @@ namespace SCG.UnityAssetPublisherTools
 
             changed |= DefineSymbolsManager.RemoveDefineSymbol(SamplesRenamedDefineSymbol);
             if (changed)
+            {
                 ScheduleRefresh();
+                RootFolderSyncCoordinator.ScheduleSync();
+            }
 
             return changed;
         }
@@ -65,12 +68,17 @@ namespace SCG.UnityAssetPublisherTools
             if (!TryGetPackageRootPath(out var rootPath))
                 return false;
 
+            RootFolderSyncCoordinator.PrepareForVisibleFolders(rootPath);
+
             var changed = EnsurePairState(rootPath, SamplesBase, SamplesRenamed, shouldBeVisible: true);
             changed |= EnsurePairState(rootPath, DocumentationBase, DocumentationRenamed, shouldBeVisible: true);
 
             changed |= DefineSymbolsManager.AddDefineSymbol(SamplesRenamedDefineSymbol);
             if (changed)
+            {
                 ScheduleRefresh();
+                RootFolderSyncCoordinator.ScheduleSync();
+            }
 
             return changed;
         }
@@ -105,10 +113,11 @@ namespace SCG.UnityAssetPublisherTools
             Missing = 0,
             Base = 1,
             Renamed = 2,
-            Conflict = 3
+            Conflict = 3,
+            FileConflict = 4
         }
 
-        private static bool TryGetPackageRootPath(out string rootPath)
+        internal static bool TryGetPackageRootPath(out string rootPath)
         {
             rootPath = string.Empty;
 
@@ -137,9 +146,13 @@ namespace SCG.UnityAssetPublisherTools
             var basePath = Path.Combine(rootPath, baseName);
             var renamedPath = Path.Combine(rootPath, renamedName);
 
-            var hasBase = Directory.Exists(basePath);
-            var hasRenamed = Directory.Exists(renamedPath);
+            var baseState = GetPathState(basePath);
+            var renamedState = GetPathState(renamedPath);
+            if (baseState == PathState.File || renamedState == PathState.File)
+                return FolderPairState.FileConflict;
 
+            var hasBase = baseState == PathState.Directory;
+            var hasRenamed = renamedState == PathState.Directory;
             return hasBase switch
             {
                 true when hasRenamed => FolderPairState.Conflict,
@@ -158,6 +171,8 @@ namespace SCG.UnityAssetPublisherTools
                     return false;
                 case FolderPairState.Conflict:
                     throw new InvalidOperationException($"Both '{baseName}' and '{renamedName}' exist. Resolve the conflict manually.");
+                case FolderPairState.FileConflict:
+                    throw new InvalidOperationException($"A file occupies '{baseName}' or '{renamedName}'. Resolve the path conflict manually.");
                 case FolderPairState.Base:
                 case FolderPairState.Renamed:
                 default:
@@ -188,6 +203,21 @@ namespace SCG.UnityAssetPublisherTools
             if (!Directory.Exists(srcPath))
                 return;
 
+            EnsureDestinationCanReceiveFolder(dstPath);
+
+            if (IsProjectAssetPath(srcPath) && IsProjectAssetPath(dstPath))
+            {
+                var error = AssetDatabase.MoveAsset(NormalizeAssetPath(srcPath), NormalizeAssetPath(dstPath));
+                if (string.IsNullOrWhiteSpace(error))
+                    return;
+
+                Debug.LogError("Failed to move files. " +
+                    "Close any applications that may lock project files " +
+                    "(File Explorer windows, IDEs/code editors, VCS clients, antivirus scanners, and any external processes touching the folder) " +
+                    $"and try again. Unity reported: {error}");
+                throw new IOException(error);
+            }
+
             try
             {
                 FileUtil.MoveFileOrDirectory(srcPath, dstPath);
@@ -211,6 +241,42 @@ namespace SCG.UnityAssetPublisherTools
 
             FileUtil.MoveFileOrDirectory(srcMeta, dstMeta);
         }
+
+        private static void EnsureDestinationCanReceiveFolder(string dstPath)
+        {
+            var dstState = GetPathState(dstPath);
+            switch (dstState)
+            {
+                case PathState.File:
+                    throw new IOException($"Cannot move folder to '{dstPath}' because a file already exists at that path.");
+                case PathState.Directory:
+                    throw new IOException($"Cannot move folder to '{dstPath}' because a directory already exists at that path.");
+                case PathState.Missing:
+                default:
+                    break;
+            }
+
+            var dstMeta = dstPath + ".meta";
+            if (File.Exists(dstMeta))
+                File.Delete(dstMeta);
+        }
+
+        private static PathState GetPathState(string path) =>
+            Directory.Exists(path)
+                ? PathState.Directory
+                : File.Exists(path)
+                    ? PathState.File
+                    : PathState.Missing;
+
+        private static bool IsProjectAssetPath(string path)
+        {
+            var normalized = NormalizeAssetPath(path);
+            return normalized.StartsWith(AssetsRoot, StringComparison.Ordinal) ||
+                   normalized.StartsWith(PackagesRoot, StringComparison.Ordinal);
+        }
+
+        private static string NormalizeAssetPath(string path) =>
+            path.Replace("\\", "/");
 
         private static void ScheduleRefresh()
         {

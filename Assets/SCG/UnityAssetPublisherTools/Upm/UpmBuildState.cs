@@ -10,12 +10,6 @@ namespace SCG.UnityAssetPublisherTools.Upm
     [Serializable]
     internal sealed class UpmBuildState
     {
-        /// <summary>Original Directory Monitoring preference value captured by the tool.</summary>
-        public bool DirectoryMonitoringOriginalEnabled;
-
-        /// <summary>True when the tool has temporarily disabled Directory Monitoring and must restore it.</summary>
-        public bool DirectoryMonitoringRestorePending;
-
         /// <summary>Folder name used under Assets, Temp, and Packages.</summary>
         public string AssetRootFolder;
 

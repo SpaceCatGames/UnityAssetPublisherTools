@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e57ddff36ce294a45ac83ea97352c290, type: 3}
   m_Name: AssetPublisherToolsSettings
   m_EditorClassIdentifier: 
-  <PackageVersion>k__BackingField: 1.0.1
-  _lastSyncedPackageVersion: 1.0.1
+  <PackageVersion>k__BackingField: 1.0.2
+  _lastSyncedPackageVersion: 1.0.2
   <PackageId>k__BackingField: scg.unity.publishertools
   _lastSyncedPackageId: scg.unity.publishertools
   <PackageDisplayName>k__BackingField: UnityAssetPublisherTools
@@ -27,4 +27,5 @@ MonoBehaviour:
   <AssetRootFolder>k__BackingField: SCG
   <BaseFolder>k__BackingField: {fileID: 102900000, guid: ca7412fe184f7334d94cd38b8e4bb599, type: 3}
   <PackageAsset>k__BackingField: {fileID: 4900000, guid: b00ea02f556ed0843bfcd0ba279c2dd6, type: 3}
+  <IsRootFolderSyncEnabled>k__BackingField: 0
   _lastSyncedPackageJsonPath: Assets/SCG/package.json
