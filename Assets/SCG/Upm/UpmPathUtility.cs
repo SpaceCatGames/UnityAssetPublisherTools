@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace SCG.UnityAssetPublisherTools.Upm
 {
@@ -30,6 +31,7 @@ namespace SCG.UnityAssetPublisherTools.Upm
         /// <summary>
         /// Converts a Unity project-relative path into an absolute filesystem path.
         /// Absolute inputs are passed through and normalized using <see cref="Path.GetFullPath(string)"/>.
+        /// Package paths are resolved through Package Manager to support Library/PackageCache locations.
         /// The helper supports forward and backward slash separators.
         /// </summary>
         /// <param name="path">Project-relative or absolute path.</param>
@@ -38,9 +40,13 @@ namespace SCG.UnityAssetPublisherTools.Upm
             if (string.IsNullOrEmpty(path))
                 return string.Empty;
 
-            return Path.IsPathRooted(path)
-                ? Path.GetFullPath(path)
-                : Path.GetFullPath(Path.Combine(ProjectRootAbs, path));
+            if (Path.IsPathRooted(path))
+                return Path.GetFullPath(path);
+
+            var normalized = path.Replace('\\', '/');
+            return TryResolvePackageAssetPath(normalized, out var packagePath)
+                ? packagePath
+                : Path.GetFullPath(Path.Combine(ProjectRootAbs, normalized));
         }
 
         /// <summary>
@@ -108,6 +114,54 @@ namespace SCG.UnityAssetPublisherTools.Upm
 
             var rel = f[o.Length..];
             return Path.Combine(tempRootAbs, rel);
+        }
+
+        private static bool TryResolvePackageAssetPath(string assetPath, out string absolutePath)
+        {
+            absolutePath = string.Empty;
+
+            if (!assetPath.StartsWith(Constants.PackagesRoot, StringComparison.Ordinal))
+                return false;
+
+            var packageRootPath = GetPackageRootAssetPath(assetPath);
+            if (string.IsNullOrWhiteSpace(packageRootPath))
+                return false;
+
+            var packageInfo = PackageInfo.FindForAssetPath(assetPath) ??
+                              PackageInfo.FindForAssetPath(packageRootPath);
+            if (packageInfo == null || string.IsNullOrWhiteSpace(packageInfo.resolvedPath))
+                return false;
+
+            var packageAssetPath = packageInfo.assetPath?.Replace('\\', '/').TrimEnd('/');
+            if (string.IsNullOrWhiteSpace(packageAssetPath))
+                return false;
+
+            var normalizedAssetPath = assetPath.TrimEnd('/');
+            var isPackageRoot = string.Equals(normalizedAssetPath, packageAssetPath, StringComparison.Ordinal);
+            switch (isPackageRoot)
+            {
+                case false when !normalizedAssetPath.StartsWith(packageAssetPath + "/", StringComparison.Ordinal):
+                    return false;
+                case true:
+                    absolutePath = Path.GetFullPath(packageInfo.resolvedPath);
+                    return true;
+            }
+
+            var relativePath = normalizedAssetPath[(packageAssetPath.Length + 1)..];
+            absolutePath = Path.GetFullPath(Path.Combine(packageInfo.resolvedPath, relativePath));
+            return true;
+        }
+
+        private static string GetPackageRootAssetPath(string assetPath)
+        {
+            var packageNameStart = Constants.PackagesRoot.Length;
+            if (assetPath.Length <= packageNameStart)
+                return string.Empty;
+
+            var nextSeparatorIndex = assetPath.IndexOf('/', packageNameStart);
+            return nextSeparatorIndex < 0
+                ? assetPath.TrimEnd('/')
+                : assetPath[..nextSeparatorIndex];
         }
     }
 }

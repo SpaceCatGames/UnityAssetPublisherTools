@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using SCG.UnityAssetPublisherTools.Helpers;
+using SCG.UnityAssetPublisherTools.Upm;
 using UnityEditor;
 using UnityEngine;
 using static SCG.UnityAssetPublisherTools.Constants;
@@ -200,27 +201,20 @@ namespace SCG.UnityAssetPublisherTools
 
         private static void MoveFolderWithMeta(string srcPath, string dstPath)
         {
-            if (!Directory.Exists(srcPath))
+            var srcFileSystemPath = UpmPathUtility.ToAbsolute(srcPath);
+            var dstFileSystemPath = UpmPathUtility.ToAbsolute(dstPath);
+
+            if (!Directory.Exists(srcFileSystemPath))
+                return;
+
+            if (UpmPathUtility.PathsEqual(srcFileSystemPath, dstFileSystemPath))
                 return;
 
             EnsureDestinationCanReceiveFolder(dstPath);
 
-            if (IsProjectAssetPath(srcPath) && IsProjectAssetPath(dstPath))
-            {
-                var error = AssetDatabase.MoveAsset(NormalizeAssetPath(srcPath), NormalizeAssetPath(dstPath));
-                if (string.IsNullOrWhiteSpace(error))
-                    return;
-
-                Debug.LogError("Failed to move files. " +
-                    "Close any applications that may lock project files " +
-                    "(File Explorer windows, IDEs/code editors, VCS clients, antivirus scanners, and any external processes touching the folder) " +
-                    $"and try again. Unity reported: {error}");
-                throw new IOException(error);
-            }
-
             try
             {
-                FileUtil.MoveFileOrDirectory(srcPath, dstPath);
+                FileUtil.MoveFileOrDirectory(srcFileSystemPath, dstFileSystemPath);
             }
             catch (Exception)
             {
@@ -231,11 +225,11 @@ namespace SCG.UnityAssetPublisherTools
                 throw;
             }
 
-            var srcMeta = srcPath + ".meta";
+            var srcMeta = srcFileSystemPath + ".meta";
             if (!File.Exists(srcMeta))
                 return;
 
-            var dstMeta = dstPath + ".meta";
+            var dstMeta = dstFileSystemPath + ".meta";
             if (File.Exists(dstMeta))
                 File.Delete(dstMeta);
 
@@ -256,27 +250,20 @@ namespace SCG.UnityAssetPublisherTools
                     break;
             }
 
-            var dstMeta = dstPath + ".meta";
+            var dstMeta = UpmPathUtility.ToAbsolute(dstPath) + ".meta";
             if (File.Exists(dstMeta))
                 File.Delete(dstMeta);
         }
 
-        private static PathState GetPathState(string path) =>
-            Directory.Exists(path)
+        private static PathState GetPathState(string path)
+        {
+            var fileSystemPath = UpmPathUtility.ToAbsolute(path);
+            return Directory.Exists(fileSystemPath)
                 ? PathState.Directory
-                : File.Exists(path)
+                : File.Exists(fileSystemPath)
                     ? PathState.File
                     : PathState.Missing;
-
-        private static bool IsProjectAssetPath(string path)
-        {
-            var normalized = NormalizeAssetPath(path);
-            return normalized.StartsWith(AssetsRoot, StringComparison.Ordinal) ||
-                   normalized.StartsWith(PackagesRoot, StringComparison.Ordinal);
         }
-
-        private static string NormalizeAssetPath(string path) =>
-            path.Replace("\\", "/");
 
         private static void ScheduleRefresh()
         {
