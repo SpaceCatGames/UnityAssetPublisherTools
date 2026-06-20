@@ -12,6 +12,8 @@ namespace SCG.UnityAssetPublisherTools.Helpers
     /// </summary>
     public static class ManifestJsonUtility
     {
+        private static readonly Encoding s_utf8WithoutBom = new UTF8Encoding(false);
+
         #region Public API
 
         /// <summary>
@@ -86,7 +88,7 @@ namespace SCG.UnityAssetPublisherTools.Helpers
                 return;
 
             File.SetAttributes(manifestAbs, FileAttributes.Normal);
-            File.WriteAllText(manifestAbs, newJson, Encoding.UTF8);
+            File.WriteAllText(manifestAbs, newJson, s_utf8WithoutBom);
         }
 
         private static bool TryLocateDependenciesObject(
